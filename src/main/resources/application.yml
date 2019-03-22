@@ -1,0 +1,5 @@
+server:
+  port: 8882
+spring:
+  thymeleaf:
+    cache: false #这样不缓存才能实现热部署

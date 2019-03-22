@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<meta lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>测试websocket</title>
+
+    <script type="text/javascript" src="/js/index.js"></script>
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+</head>
+
+<input type="text" id="inp_url" class="form-control" value="ws://localhost:8887" placeholder="连接的地址"/>
+
+<button type="button" id="btn_conn" class="btn btn-primary" style="float:left;margin-left:10px;margin-right:10px;"
+        onclick="initWebSocket();">连接
+</button>
+<button type="button" id="btn_close" class="btn btn-danger" style="float:left;" onclick="close();">断开</button>
+<hr>
+<textarea id="inp_send" class="form-control" style="height:100px;" placeholder="发送的内容"></textarea>
+<button type="button" id="btn_send" class="btn btn-info" onclick="sendto();">发送（ctrl+回车）</button>
+</body>
+<script type="text/javascript">
+    var websocket;
+
+    //创建websocket
+    function initWebSocket() {
+        if (ws_url = $.trim($("#inp_url").val()).toLocaleLowerCase()) {
+            try {
+                websocket = new WebSocket($.trim($("#inp_url").val())),
+                    websocket.onopen = function () {
+                        console.log('连接已建立，正在等待数据...');
+                    },
+                    websocket.onmessage = function (a) {
+                        console.log("测试");
+                        console.log(a.data);
+                        console.log(a);
+                    },
+                    websocket.onclose = function () {
+                        console.log('onclose');
+                    }
+            } catch (a) {
+                console.log(a);
+            }
+        }
+    }
+
+    //发送消息
+    function sendto() {
+        var a = $.trim($("#inp_send").val());
+        if ("" != a && (websocket && 1 == websocket.readyState)) {
+            websocket.send(a);
+        }
+    }
+
+    //关闭websocket
+    function close() {
+        websocket.close()
+    }
+
+    //发起ajax请求
+    var getData = function(url){
+        $.ajax({
+            url: url,
+            async: true,
+            dataType: "jsonp",
+            success: function(data){
+                console.log("success: " + data);
+            }
+        });
+    };
+
+    //获取新闻详细页url
+    var map = {
+        "国足": "https://interface.sina.cn/wap_api/layout_col.d.json?showcid=192611&col=57300%2C185953&level=1%2C2%2C3&show_num=200&page=1&act=more&jsoncallback=callbackFunction",
+        "中超": "https://interface.sina.cn/wap_api/layout_col.d.json?showcid=72134&col=57300%2C72134%2C200434%2C192611%2C185953&level=1%2C2%2C3&show_num=200&page=2&act=more&jsoncallback=callbackFunction",
+        "欧冠": "https://interface.sina.cn/wap_api/col_data.d.html?col=72428&level=&show_num=200&page=1&act=more&jsoncallback=callbackFunction",
+        "英超": "https://interface.sina.cn/wap_api/layout_col.d.json?showcid=192598&col=72264&level=1%2C2%2C3&show_num=200&page=1&act=more&jsoncallback=callbackFunction",
+        "西甲": "https://interface.sina.cn/wap_api/layout_col.d.json?showcid=192603&col=40754%2C72311%2C72312%2C72313%2C72314%2C72315%2C192603&level=1%2C2%2C3&show_num=200&page=1&act=more&jsoncallback=callbackFunction"
+    };
+
+    //遍历url获取详情页url数据
+    for (item in map){
+        console.log(item + ": " + map[item]);
+        getData(map[item]);
+    }
+    //回调函数
+    var callbackFunction = function (data) {
+        console.log(data.result);
+    }
+
+    // $.ajax({
+    //     // url: "http://interface.sina.cn/wap_api/layout_col.d.json?&showcid=192603",
+    //     url: "https://interface.sina.cn/wap_api/layout_col.d.json?showcid=192611&col=57300%2C185953&level=1%2C2%2C3&show_num=160&page=4&act=more&jsoncallback=callbackFunction&_=1553280258201&callback=Zepto1553280220454",
+    //     // headers:{
+    //     //     "Access-Control-Allow-Origin": '*'
+    //     // },
+    //     dataType: "jsonp",
+    //     // type: "GET",
+    //     // async: false,
+    //     // data: {
+    //     //     col: "40754,72311,72312,72313,72314,72315,192603",
+    //     //     level: "1,2,3",
+    //     //     show_num: 500,
+    //     //     page: 1,
+    //     //     jsoncallback: "callbackFunction",
+    //     //     act: "more"
+    //     // },
+    //     success: function(data){
+    //         console.log("success: " + data);
+    //     },
+    //     error: function(e){
+    //         console.log("error: "+ e);
+    //     }
+    // });
+</script>
+</html>
